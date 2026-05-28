@@ -1,0 +1,72 @@
+import json, os, uuid
+from dataclasses import dataclass, field, asdict
+from typing import Optional
+
+PALETTE = [
+    "#E53935", "#8E24AA", "#1E88E5", "#00897B",
+    "#F4511E", "#D81B60", "#5E35B1", "#039BE5",
+    "#43A047", "#FB8C00", "#00ACC1", "#7CB342",
+]
+
+
+@dataclass
+class KeyEvent:
+    t: str    # 'p' press / 'r' release
+    k: str    # key string
+    d: float  # delay before event (seconds)
+
+
+@dataclass
+class Macro:
+    id: str
+    name: str
+    color: str
+    kind: str = "keys"  # keys | text | cmd
+    events: list = field(default_factory=list)
+    text: str = ""
+    cmd: str = ""
+    icon: str = ""  # emoji shown on the tile, empty = none
+
+
+class MacroStore:
+    def __init__(self, path: str):
+        self.path = path
+        self._d: dict[int, Macro] = {}
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        self._load()
+
+    def _load(self):
+        if not os.path.exists(self.path):
+            return
+        try:
+            valid = Macro.__dataclass_fields__
+            with open(self.path) as f:
+                for k, v in json.load(f).items():
+                    self._d[int(k)] = Macro(**{f: v[f] for f in valid if f in v})
+        except Exception:
+            pass
+
+    def save(self):
+        with open(self.path, "w") as f:
+            json.dump({str(k): asdict(m) for k, m in self._d.items()}, f, indent=2)
+
+    def get(self, slot: int) -> Optional[Macro]:
+        return self._d.get(slot)
+
+    def set(self, slot: int, macro: Macro):
+        self._d[slot] = macro
+        self.save()
+
+    def delete(self, slot: int):
+        self._d.pop(slot, None)
+        self.save()
+
+    def next_color(self) -> str:
+        used = {m.color for m in self._d.values()}
+        for c in PALETTE:
+            if c not in used:
+                return c
+        return PALETTE[len(self._d) % len(PALETTE)]
+
+    def new_macro(self, name: str = "New Macro") -> Macro:
+        return Macro(id=str(uuid.uuid4()), name=name, color=self.next_color())
