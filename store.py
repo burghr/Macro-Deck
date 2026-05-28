@@ -26,6 +26,7 @@ class Macro:
     text: str = ""
     cmd: str = ""
     icon: str = ""  # emoji shown on the tile, empty = none
+    keep_open: bool = False  # if True, popup stays open after running this macro
 
 
 class MacroStore:

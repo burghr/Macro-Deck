@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
     QPushButton, QTextEdit, QRadioButton, QButtonGroup, QWidget,
     QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView,
-    QApplication,
+    QApplication, QCheckBox,
 )
 from PyQt6.QtCore import Qt, pyqtSignal, QObject, QEvent
 from PyQt6.QtGui import QFont, QColor
@@ -21,6 +21,8 @@ QLineEdit, QTextEdit {
 }
 QRadioButton   { color: #c0c0c0; font-size: 12px; spacing: 6px; }
 QRadioButton::indicator { width: 14px; height: 14px; }
+QCheckBox      { color: #c0c0c0; font-size: 12px; spacing: 6px; }
+QCheckBox::indicator { width: 14px; height: 14px; }
 QPushButton {
     background: #2a2a4a; color: #e0e0e0;
     border: none; border-radius: 6px;
@@ -147,6 +149,7 @@ class MacroEditorDialog(QDialog):
         root.addLayout(self._name_row())
         root.addLayout(self._color_row())
         root.addLayout(self._type_row())
+        root.addLayout(self._options_row())
 
         self._keys_panel = self._build_keys_panel()
         self._text_panel = self._build_text_panel()
@@ -216,6 +219,14 @@ class MacroEditorDialog(QDialog):
             rb.toggled.connect(self._refresh_panels)
             self._type_grp.addButton(rb)
             row.addWidget(rb)
+        row.addStretch()
+        return row
+
+    def _options_row(self):
+        row = QHBoxLayout()
+        self._keep_open_chk = QCheckBox("Keep popup open after running")
+        self._keep_open_chk.setChecked(self.macro.keep_open)
+        row.addWidget(self._keep_open_chk)
         row.addStretch()
         return row
 
@@ -453,6 +464,7 @@ class MacroEditorDialog(QDialog):
             events=events,
             text=self._text_edit.toPlainText() if kind == "text" else "",
             cmd=self._cmd_edit.text().strip() if kind == "cmd" else "",
+            keep_open=self._keep_open_chk.isChecked(),
         )
         self.store.set(self.slot, macro)
         self.accept()

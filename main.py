@@ -833,7 +833,8 @@ class MacroDeckApp(QObject):
     def _run_slot(self, slot: int):
         macro = self.store.get(slot)
         if macro:
-            self._close_popup()
+            if not macro.keep_open:
+                self._close_popup()
             self._run(macro)
 
     def _run(self, macro: Macro):
