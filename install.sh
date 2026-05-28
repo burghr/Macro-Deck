@@ -27,8 +27,17 @@ if [ ${#MISSING[@]} -gt 0 ]; then
         exit 1
     fi
     echo "    Installing: ${MISSING[*]}"
+    # pyobjc 12.x dropped Python 3.9 support; pin transitive deps so py2app
+    # resolves to the last 3.9-compatible release (11.x) on Apple's /usr/bin/python3.
+    PYOBJC_PINS=(
+        'pyobjc-core<12'
+        'pyobjc-framework-Cocoa<12'
+        'pyobjc-framework-Quartz<12'
+        'pyobjc-framework-ApplicationServices<12'
+        'pyobjc-framework-CoreText<12'
+    )
     PIP_LOG="$(mktemp -t macrodeck-pip.XXXXXX)"
-    if ! arch -arm64 "$PY" -m pip install --user "${MISSING[@]}" > "$PIP_LOG" 2>&1; then
+    if ! arch -arm64 "$PY" -m pip install --user "${MISSING[@]}" "${PYOBJC_PINS[@]}" > "$PIP_LOG" 2>&1; then
         echo "Error: failed to install Python dependencies. Full log:"
         cat "$PIP_LOG"
         echo ""
