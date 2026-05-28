@@ -9,15 +9,53 @@ APP_DEST="$INSTALL_DIR/$APP_NAME.app"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 LOG="$HOME/.mac-macro/macrodeck.log"
 
+PY=/usr/bin/python3
+
+echo "==> Checking Python dependencies..."
+MISSING=()
+for mod in py2app PyQt6 pynput; do
+    if ! arch -arm64 "$PY" -c "import $mod" 2>/dev/null; then
+        MISSING+=("$mod")
+    fi
+done
+
+if [ ${#MISSING[@]} -gt 0 ]; then
+    if ! arch -arm64 "$PY" -m pip --version >/dev/null 2>&1; then
+        echo "Error: pip is not available for $PY."
+        echo "       Install the Xcode Command Line Tools (xcode-select --install)"
+        echo "       or bootstrap pip with: $PY -m ensurepip --user"
+        exit 1
+    fi
+    echo "    Installing: ${MISSING[*]}"
+    PIP_LOG="$(mktemp -t macrodeck-pip.XXXXXX)"
+    if ! arch -arm64 "$PY" -m pip install --user "${MISSING[@]}" > "$PIP_LOG" 2>&1; then
+        echo "Error: failed to install Python dependencies. Full log:"
+        cat "$PIP_LOG"
+        echo ""
+        echo "If you see 'externally-managed-environment', you are likely using a"
+        echo "non-Apple Python (e.g. Homebrew). Either use /usr/bin/python3, create"
+        echo "a venv, or re-run pip with --break-system-packages."
+        exit 1
+    fi
+    rm -f "$PIP_LOG"
+fi
+
 echo "==> Building $APP_NAME (this takes ~30s)..."
 cd "$SCRIPT_DIR"
 rm -rf dist build
-arch -arm64 /usr/bin/python3 setup.py py2app 2>&1 | grep -v "^$" | grep -E "(warning|error|Error|Done|^!)" || true
-
-if [ ! -d "$SCRIPT_DIR/dist/$APP_NAME.app" ]; then
-    echo "Error: build failed — dist/$APP_NAME.app not found"
+BUILD_LOG="$(mktemp -t macrodeck-build.XXXXXX)"
+if ! arch -arm64 "$PY" setup.py py2app > "$BUILD_LOG" 2>&1; then
+    echo "Error: py2app build failed. Full log:"
+    cat "$BUILD_LOG"
     exit 1
 fi
+
+if [ ! -d "$SCRIPT_DIR/dist/$APP_NAME.app" ]; then
+    echo "Error: build completed but dist/$APP_NAME.app not found. Build log:"
+    cat "$BUILD_LOG"
+    exit 1
+fi
+rm -f "$BUILD_LOG"
 
 echo "==> Stopping any running instance..."
 launchctl unload "$PLIST" 2>/dev/null || true
