@@ -2,6 +2,12 @@
 
 A Stream Deck–style macro launcher for macOS. Lives in the menu bar, fires user-defined macros with a global hotkey.
 
+<p align="center">
+  <img src="docs/popup.png"  width="430" alt="Popup grid of macro tiles">
+  &nbsp;
+  <img src="docs/editor.png" width="430" alt="Macro editor dialog">
+</p>
+
 ## Features
 
 - **Grid of macro tiles** — configurable columns × rows, opens as a translucent popup near the menu bar icon
