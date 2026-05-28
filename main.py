@@ -843,6 +843,8 @@ class MacroDeckApp(QObject):
             self.player.type_text(macro.text, delay=DELAY)
         elif macro.kind == "cmd":
             self.player.run_cmd(macro.cmd)
+        elif macro.kind == "media":
+            self.player.media_key(macro.media)
         else:
             self.player.play(macro.events, delay=DELAY)
 

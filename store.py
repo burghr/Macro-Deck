@@ -21,10 +21,11 @@ class Macro:
     id: str
     name: str
     color: str
-    kind: str = "keys"  # keys | text | cmd
+    kind: str = "keys"  # keys | text | cmd | media
     events: list = field(default_factory=list)
     text: str = ""
     cmd: str = ""
+    media: str = ""  # action name when kind == "media" (vol_up, mute, etc.)
     icon: str = ""  # emoji shown on the tile, empty = none
     keep_open: bool = False  # if True, popup stays open after running this macro
 

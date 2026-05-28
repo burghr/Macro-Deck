@@ -244,6 +244,34 @@ class Player:
     def run_cmd(self, cmd: str):
         subprocess.Popen(cmd, shell=True)
 
+    # NX_KEYTYPE codes — the HID consumer keys macOS uses for the keyboard's
+    # vol/mute/brightness/media buttons. Posting them via NSSystemDefined
+    # subtype 8 is what triggers the on-screen HUD and feedback sound.
+    _MEDIA_KEYS = {
+        "vol_up": 0, "vol_down": 1,
+        "brightness_up": 2, "brightness_down": 3,
+        "mute": 7,
+        "play_pause": 16, "next": 17, "prev": 18,
+    }
+
+    def media_key(self, action: str):
+        if not MACOS:
+            return
+        code = self._MEDIA_KEYS.get(action)
+        if code is None:
+            return
+        try:
+            from AppKit import NSEvent, NSSystemDefined
+            from Quartz import CGEventPost, kCGHIDEventTap
+        except Exception:
+            return
+        for d in (0xa, 0xb):  # 0xa = key down, 0xb = key up
+            ev = NSEvent.otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_(
+                NSSystemDefined, (0, 0), d << 8, 0, 0, None, 8,
+                (code << 16) | (d << 8), -1,
+            )
+            CGEventPost(kCGHIDEventTap, ev.CGEvent())
+
 
 # ── Global hotkey listener ────────────────────────────────────────────────────
 

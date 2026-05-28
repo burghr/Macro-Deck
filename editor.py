@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
     QPushButton, QTextEdit, QRadioButton, QButtonGroup, QWidget,
     QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView,
-    QApplication, QCheckBox,
+    QApplication, QCheckBox, QComboBox,
 )
 from PyQt6.QtCore import Qt, pyqtSignal, QObject, QEvent
 from PyQt6.QtGui import QFont, QColor
@@ -23,6 +23,15 @@ QRadioButton   { color: #c0c0c0; font-size: 12px; spacing: 6px; }
 QRadioButton::indicator { width: 14px; height: 14px; }
 QCheckBox      { color: #c0c0c0; font-size: 12px; spacing: 6px; }
 QCheckBox::indicator { width: 14px; height: 14px; }
+QComboBox {
+    background: #0d1117; color: #e0e0e0;
+    border: 1px solid #333; border-radius: 6px;
+    padding: 5px 8px; font-size: 12px;
+}
+QComboBox QAbstractItemView {
+    background: #0d1117; color: #e0e0e0;
+    border: 1px solid #333; selection-background-color: #2a2a4a;
+}
 QPushButton {
     background: #2a2a4a; color: #e0e0e0;
     border: none; border-radius: 6px;
@@ -151,12 +160,14 @@ class MacroEditorDialog(QDialog):
         root.addLayout(self._type_row())
         root.addLayout(self._options_row())
 
-        self._keys_panel = self._build_keys_panel()
-        self._text_panel = self._build_text_panel()
-        self._cmd_panel  = self._build_cmd_panel()
+        self._keys_panel  = self._build_keys_panel()
+        self._text_panel  = self._build_text_panel()
+        self._cmd_panel   = self._build_cmd_panel()
+        self._media_panel = self._build_media_panel()
         root.addWidget(self._keys_panel)
         root.addWidget(self._text_panel)
         root.addWidget(self._cmd_panel)
+        root.addWidget(self._media_panel)
         self._refresh_panels()
 
         root.addLayout(self._btn_row())
@@ -212,7 +223,8 @@ class MacroEditorDialog(QDialog):
         row = QHBoxLayout()
         row.addWidget(QLabel("Type:"))
         self._type_grp = QButtonGroup(self)
-        for label, val in [("Key Sequence", "keys"), ("Type Text", "text"), ("Command", "cmd")]:
+        for label, val in [("Key Sequence", "keys"), ("Type Text", "text"),
+                           ("Command", "cmd"), ("Media Key", "media")]:
             rb = QRadioButton(label)
             rb.setProperty("kind", val)
             rb.setChecked(self.macro.kind == val)
@@ -317,6 +329,38 @@ class MacroEditorDialog(QDialog):
         lay.addWidget(self._cmd_edit)
         return p
 
+    _MEDIA_ACTIONS = [
+        ("Volume up",       "vol_up"),
+        ("Volume down",     "vol_down"),
+        ("Mute toggle",     "mute"),
+        ("Play / Pause",    "play_pause"),
+        ("Next track",      "next"),
+        ("Previous track",  "prev"),
+        ("Brightness up",   "brightness_up"),
+        ("Brightness down", "brightness_down"),
+    ]
+
+    def _build_media_panel(self):
+        p = QWidget()
+        lay = QVBoxLayout(p)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.addWidget(QLabel("Action:"))
+        self._media_combo = QComboBox()
+        for label, val in self._MEDIA_ACTIONS:
+            self._media_combo.addItem(label, val)
+        # restore selection
+        for i in range(self._media_combo.count()):
+            if self._media_combo.itemData(i) == self.macro.media:
+                self._media_combo.setCurrentIndex(i)
+                break
+        lay.addWidget(self._media_combo)
+        note = QLabel("Posts the same HID event as the keyboard's media keys, "
+                      "so the on-screen HUD and feedback sound both fire.")
+        note.setStyleSheet("color: #666; font-size: 10px;")
+        note.setWordWrap(True)
+        lay.addWidget(note)
+        return p
+
     def _btn_row(self):
         row = QHBoxLayout()
         row.addStretch()
@@ -350,6 +394,7 @@ class MacroEditorDialog(QDialog):
         self._keys_panel.setVisible(kind == "keys")
         self._text_panel.setVisible(kind == "text")
         self._cmd_panel.setVisible(kind == "cmd")
+        self._media_panel.setVisible(kind == "media")
         self.adjustSize()
 
     # ── Events table ──────────────────────────────────────────────────────────
@@ -464,6 +509,7 @@ class MacroEditorDialog(QDialog):
             events=events,
             text=self._text_edit.toPlainText() if kind == "text" else "",
             cmd=self._cmd_edit.text().strip() if kind == "cmd" else "",
+            media=self._media_combo.currentData() if kind == "media" else "",
             keep_open=self._keep_open_chk.isChecked(),
         )
         self.store.set(self.slot, macro)
