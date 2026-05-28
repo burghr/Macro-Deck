@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, pyqtSignal, QObject, QEvent
 from PyQt6.QtGui import QFont, QColor
 
-from store import MacroStore, Macro, KeyEvent, PALETTE
+from store import MacroStore, Macro, KeyEvent
 from engine import Recorder, HAVE_PYNPUT, check_input_monitoring
 
 DIALOG_STYLE = """
@@ -156,7 +156,6 @@ class MacroEditorDialog(QDialog):
         root.setContentsMargins(20, 20, 20, 20)
 
         root.addLayout(self._name_row())
-        root.addLayout(self._color_row())
         root.addLayout(self._type_row())
         root.addLayout(self._options_row())
 
@@ -197,27 +196,6 @@ class MacroEditorDialog(QDialog):
         if dlg.exec():
             self._selected_icon = dlg.chosen
             self._icon_btn.setText(self._selected_icon if self._selected_icon else "⊕")
-
-    def _color_row(self):
-        row = QHBoxLayout()
-        row.addWidget(QLabel("Color:"))
-        row.addStretch()
-        self._selected_color = self.macro.color
-        self._color_btns = []
-        for c in PALETTE:
-            b = QPushButton()
-            b.setFixedSize(22, 22)
-            b.setCheckable(True)
-            b.setChecked(c == self._selected_color)
-            b.setProperty("cv", c)
-            b.setStyleSheet(
-                f"QPushButton{{background:{c};border-radius:11px;border:2px solid transparent;}}"
-                f"QPushButton:checked{{border-color:white;}}"
-            )
-            b.clicked.connect(lambda _, col=c: self._pick_color(col))
-            row.addWidget(b)
-            self._color_btns.append(b)
-        return row
 
     def _type_row(self):
         row = QHBoxLayout()
@@ -378,11 +356,6 @@ class MacroEditorDialog(QDialog):
 
     # ── Logic ────────────────────────────────────────────────────────────────
 
-    def _pick_color(self, color: str):
-        self._selected_color = color
-        for b in self._color_btns:
-            b.setChecked(b.property("cv") == color)
-
     def _current_kind(self) -> str:
         for b in self._type_grp.buttons():
             if b.isChecked():
@@ -503,7 +476,6 @@ class MacroEditorDialog(QDialog):
         macro = Macro(
             id=self.macro.id,
             name=self._name_edit.text().strip() or "Macro",
-            color=self._selected_color,
             icon=self._selected_icon,
             kind=kind,
             events=events,

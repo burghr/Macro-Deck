@@ -9,6 +9,8 @@ class Settings:
     toggle_hotkey: str = "ctrl+shift+m"
     grid_cols: int = 4
     grid_rows: int = 3
+    card_opacity: float = 0.72   # 0.10 (very see-through) .. 1.00 (solid)
+    tile_opacity: float = 1.00   # 0.10 .. 1.00
 
 
 def load() -> Settings:

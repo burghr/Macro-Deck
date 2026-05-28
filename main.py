@@ -22,11 +22,11 @@ if '--check-tcc-im' in sys.argv:
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QGridLayout, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QFrame, QSizePolicy, QMenu, QDialog,
-    QSystemTrayIcon, QLineEdit, QSpinBox,
+    QSystemTrayIcon, QLineEdit, QSpinBox, QSlider,
 )
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer, QObject, QEvent, QProcess
 from PyQt6.QtGui import (
-    QFont, QIcon, QPixmap, QPainter, QColor, QBrush, QCursor,
+    QFont, QIcon, QPixmap, QPainter, QColor, QBrush, QCursor, QPen, QPainterPath,
 )
 
 from store import MacroStore, Macro
@@ -40,12 +40,14 @@ MACOS = platform.system() == "Darwin"
 BG    = "#1a1a2e"
 EMPTY = "#1a1a3a"
 
+# Opaque dark menu styling so the right-click menus stay readable regardless
+# of the popup's transparency setting.
 MENU_STYLE = """
-QMenu { background: #2a2a4a; color: #e0e0e0; border: 1px solid #444;
+QMenu { background: #2c2c2e; color: #e8e8e8; border: 1px solid #3a3a3c;
         border-radius: 6px; padding: 4px; }
-QMenu::item { padding: 6px 20px; border-radius: 4px; }
-QMenu::item:selected { background: #3a3a6a; }
-QMenu::separator { height: 1px; background: #444; margin: 4px 8px; }
+QMenu::item { padding: 6px 22px; border-radius: 4px; }
+QMenu::item:selected { background: #4a4a4c; color: #ffffff; }
+QMenu::separator { height: 1px; background: #3a3a3c; margin: 4px 8px; }
 """
 
 
@@ -62,7 +64,7 @@ def _hide_dock():
 
 
 def _patch_panel(widget: QWidget):
-    """Set NSWindowStyleMaskNonactivatingPanel so clicks don't steal focus."""
+    """Make the popup a non-activating panel so clicks don't steal focus."""
     if not MACOS:
         return
     try:
@@ -94,6 +96,38 @@ def _make_tray_icon() -> QIcon:
     return QIcon(pix)
 
 
+# ── Card (custom background) ──────────────────────────────────────────────────
+
+class _Card(QFrame):
+    """Card background painted directly via paintEvent. Stylesheet rgba alpha
+    is unreliable on Qt translucent windows once an NSVisualEffectView is in
+    the view hierarchy — drawing it ourselves guarantees the slider works."""
+
+    def __init__(self, opacity: float = 0.72, parent=None):
+        super().__init__(parent)
+        self._opacity = opacity
+        self._radius = 11.0
+        # Transparent stylesheet so QFrame doesn't paint anything itself.
+        self.setStyleSheet("QFrame { background: transparent; border: none; }")
+
+    def set_opacity(self, opacity: float):
+        self._opacity = opacity
+        self.update()
+
+    def paintEvent(self, ev):  # noqa: N802 - Qt naming
+        a = max(0.05, min(1.0, self._opacity))
+        p = QPainter(self)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing)
+        rect = self.rect().adjusted(0, 0, -1, -1)
+        path = QPainterPath()
+        path.addRoundedRect(float(rect.x()), float(rect.y()),
+                            float(rect.width()), float(rect.height()),
+                            self._radius, self._radius)
+        p.fillPath(path, QColor(28, 28, 30, int(a * 255)))
+        p.setPen(QPen(QColor(255, 255, 255, 20), 1))
+        p.drawPath(path)
+
+
 # ── MacroTile ─────────────────────────────────────────────────────────────────
 
 class MacroTile(QFrame):
@@ -101,10 +135,12 @@ class MacroTile(QFrame):
     edit_req   = pyqtSignal(int)
     delete_req = pyqtSignal(int)
 
-    def __init__(self, slot: int, macro: Optional[Macro], parent=None):
+    def __init__(self, slot: int, macro: Optional[Macro],
+                 tile_opacity: float = 1.0, parent=None):
         super().__init__(parent)
         self.slot  = slot
         self.macro = macro
+        self._tile_opacity = tile_opacity
         self.setMinimumSize(110, 82)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -121,6 +157,10 @@ class MacroTile(QFrame):
         self.macro = macro
         self._render()
 
+    def set_tile_opacity(self, opacity: float):
+        self._tile_opacity = opacity
+        self._render()
+
     def _render(self):
         # takeAt + setParent(None) removes widgets immediately.
         # deleteLater() is deferred and would race with the new widgets
@@ -134,10 +174,14 @@ class MacroTile(QFrame):
         hotkey = f"⌃{self.slot % 10}" if self.slot <= 10 else f"#{self.slot}"
 
         if self.macro:
-            c = self.macro.color
+            # Monochrome — same neutral chip for every tile, opacity-driven.
+            a = max(0.05, min(1.0, self._tile_opacity))
+            ah = max(0.10, min(1.0, a + 0.10))  # hover slightly more opaque
             self.setStyleSheet(
-                f"MacroTile{{background:{c}18;border:2px solid {c}55;border-radius:10px;}}"
-                f"MacroTile:hover{{background:{c}38;border-color:{c}aa;}}"
+                f"MacroTile{{background:rgba(44,44,46,{a});"
+                "border:1px solid rgba(255,255,255,0.10);border-radius:10px;}"
+                f"MacroTile:hover{{background:rgba(58,58,60,{ah});"
+                "border-color:rgba(255,255,255,0.22);}"
             )
             self._lay.addStretch()
             if self.macro.icon:
@@ -150,7 +194,7 @@ class MacroTile(QFrame):
             name = QLabel(self.macro.name)
             fs = 9 if self.macro.icon else 11
             name.setFont(QFont(".AppleSystemUIFont", fs, QFont.Weight.Medium))
-            name.setStyleSheet(f"color:{c};background:transparent;border:none;")
+            name.setStyleSheet("color:#f0f0f0;background:transparent;border:none;")
             name.setAlignment(Qt.AlignmentFlag.AlignCenter)
             name.setWordWrap(True)
             name.setFocusPolicy(Qt.FocusPolicy.NoFocus)
@@ -158,19 +202,21 @@ class MacroTile(QFrame):
             self._lay.addStretch()
         else:
             self.setStyleSheet(
-                f"MacroTile{{background:{EMPTY};border:2px dashed #2e2e5a;border-radius:10px;}}"
-                f"MacroTile:hover{{background:#22224a;border-color:#444;}}"
+                "MacroTile{background:rgba(255,255,255,0.04);"
+                "border:2px dashed rgba(255,255,255,0.18);border-radius:10px;}"
+                "MacroTile:hover{background:rgba(255,255,255,0.10);"
+                "border-color:rgba(255,255,255,0.32);}"
             )
             plus = QLabel("+")
             plus.setFont(QFont(".AppleSystemUIFont", 20, QFont.Weight.Light))
-            plus.setStyleSheet("color:#3a3a6a;background:transparent;border:none;")
+            plus.setStyleSheet("color:rgba(255,255,255,0.35);background:transparent;border:none;")
             plus.setAlignment(Qt.AlignmentFlag.AlignCenter)
             plus.setFocusPolicy(Qt.FocusPolicy.NoFocus)
             self._lay.addWidget(plus, alignment=Qt.AlignmentFlag.AlignCenter)
 
         hk = QLabel(hotkey)
         hk.setStyleSheet(
-            f"color:{'#666' if self.macro else '#2e2e5a'};font-size:9px;"
+            f"color:rgba(255,255,255,{'0.45' if self.macro else '0.22'});font-size:9px;"
             "background:transparent;border:none;"
         )
         hk.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -202,11 +248,15 @@ class MacroPopup(QWidget):
     delete_req = pyqtSignal(int)
     close_req  = pyqtSignal()
 
-    def __init__(self, store: MacroStore, cols: int = 4, rows: int = 3, parent=None):
+    def __init__(self, store: MacroStore, cols: int = 4, rows: int = 3,
+                 card_opacity: float = 0.72, tile_opacity: float = 1.0,
+                 parent=None):
         super().__init__(parent)
         self.store = store
         self._cols = cols
         self._rows = rows
+        self._card_opacity = card_opacity
+        self._tile_opacity = tile_opacity
 
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint      |
@@ -227,15 +277,7 @@ class MacroPopup(QWidget):
         outer = QVBoxLayout(self)
         outer.setContentsMargins(6, 6, 6, 6)
 
-        self._card = QFrame()
-        self._card.setObjectName("card")
-        self._card.setStyleSheet("""
-            QFrame#card {
-                background: #1a1a2e;
-                border: 1px solid #2e2e5a;
-                border-radius: 13px;
-            }
-        """)
+        self._card = _Card(self._card_opacity)
         self._card_lay = QVBoxLayout(self._card)
         self._card_lay.setContentsMargins(10, 8, 10, 10)
         self._card_lay.setSpacing(7)
@@ -243,7 +285,7 @@ class MacroPopup(QWidget):
         hdr = QHBoxLayout()
         title = QLabel("MacroDeck")
         title.setFont(QFont(".AppleSystemUIFont", 12, QFont.Weight.Bold))
-        title.setStyleSheet("color:#c0c0c0; background:transparent;")
+        title.setStyleSheet("color: #d0d0d0; background: transparent;")
         title.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         hdr.addWidget(title)
         hdr.addStretch()
@@ -252,8 +294,9 @@ class MacroPopup(QWidget):
         close_btn.setFixedSize(18, 18)
         close_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         close_btn.setStyleSheet("""
-            QPushButton{background:transparent;color:#555;border:none;font-size:11px;}
-            QPushButton:hover{color:#e0e0e0;}
+            QPushButton { background: transparent; color: #808080;
+                          border: none; font-size: 11px; }
+            QPushButton:hover { color: #f0f0f0; }
         """)
         close_btn.clicked.connect(self.close_req)
         hdr.addWidget(close_btn)
@@ -261,6 +304,13 @@ class MacroPopup(QWidget):
 
         outer.addWidget(self._card)
         self.rebuild_grid(self._cols, self._rows)
+
+    def set_opacities(self, card_opacity: float, tile_opacity: float):
+        self._card_opacity = card_opacity
+        self._tile_opacity = tile_opacity
+        self._card.set_opacity(card_opacity)
+        for tile in self._tiles:
+            tile.set_tile_opacity(tile_opacity)
 
     def rebuild_grid(self, cols: int, rows: int):
         self._cols = cols
@@ -281,7 +331,8 @@ class MacroPopup(QWidget):
         for i in range(cols * rows):
             r, c = divmod(i, cols)
             slot = i + 1
-            tile = MacroTile(slot, self.store.get(slot))
+            tile = MacroTile(slot, self.store.get(slot),
+                             tile_opacity=self._tile_opacity)
             tile.clicked.connect(self.run_req)
             tile.edit_req.connect(self.edit_req)
             tile.delete_req.connect(self.delete_req)
@@ -640,6 +691,16 @@ class SettingsDialog(QDialog):
         grid_row.addStretch()
         lay.addLayout(grid_row)
 
+        lay.addSpacing(8)
+
+        self._card_slider, card_row = self._opacity_row(
+            "Card opacity", self._s.card_opacity)
+        lay.addLayout(card_row)
+
+        self._tile_slider, tile_row = self._opacity_row(
+            "Tile opacity", self._s.tile_opacity)
+        lay.addLayout(tile_row)
+
         lay.addStretch()
 
         btns = QHBoxLayout()
@@ -653,11 +714,32 @@ class SettingsDialog(QDialog):
         btns.addWidget(save_btn)
         lay.addLayout(btns)
 
+    def _opacity_row(self, label: str, initial: float):
+        row = QHBoxLayout()
+        lbl = QLabel(label)
+        lbl.setStyleSheet("color:#aaa; font-size:12px;")
+        lbl.setFixedWidth(130)
+        slider = QSlider(Qt.Orientation.Horizontal)
+        slider.setRange(10, 100)
+        slider.setValue(int(round(initial * 100)))
+        slider.setFixedWidth(150)
+        val = QLabel(f"{slider.value()}%")
+        val.setStyleSheet("color:#aaa; font-size:12px;")
+        val.setFixedWidth(40)
+        slider.valueChanged.connect(lambda v: val.setText(f"{v}%"))
+        row.addWidget(lbl)
+        row.addWidget(slider)
+        row.addWidget(val)
+        row.addStretch()
+        return slider, row
+
     def _save(self):
         hk = self._hk_edit.text().strip()
         self._s.toggle_hotkey = hk if hk else self._s.toggle_hotkey
         self._s.grid_cols = self._cols_spin.value()
         self._s.grid_rows = self._rows_spin.value()
+        self._s.card_opacity = self._card_slider.value() / 100.0
+        self._s.tile_opacity = self._tile_slider.value() / 100.0
         self.accept()
 
     @property
@@ -693,7 +775,12 @@ class MacroDeckApp(QObject):
         self._build_ctx_menu()
         self._tray.activated.connect(self._on_tray)
 
-        self._popup = MacroPopup(self.store, self._cfg.grid_cols, self._cfg.grid_rows)
+        self._popup = MacroPopup(
+            self.store,
+            cols=self._cfg.grid_cols, rows=self._cfg.grid_rows,
+            card_opacity=self._cfg.card_opacity,
+            tile_opacity=self._cfg.tile_opacity,
+        )
         self._popup.run_req.connect(self._run_slot)
         self._popup.edit_req.connect(self._edit_slot)
         self._popup.delete_req.connect(self._delete_slot)
@@ -748,12 +835,24 @@ class MacroDeckApp(QObject):
     # ── Settings ──────────────────────────────────────────────────────────────
 
     def _open_settings(self):
+        # SettingsDialog mutates the Settings object in place, so we must
+        # snapshot the previous values up front — comparing new_cfg fields
+        # against self._cfg after the dialog returns would compare against
+        # itself and never detect a change.
+        old_hotkey   = self._cfg.toggle_hotkey
+        old_cols     = self._cfg.grid_cols
+        old_rows     = self._cfg.grid_rows
+        old_card_op  = self._cfg.card_opacity
+        old_tile_op  = self._cfg.tile_opacity
+
         dlg = SettingsDialog(self._cfg)
         if dlg.exec():
             new_cfg = dlg.value
-            hotkey_changed = new_cfg.toggle_hotkey != self._toggle_hotkey
-            grid_changed = (new_cfg.grid_cols != self._cfg.grid_cols or
-                            new_cfg.grid_rows != self._cfg.grid_rows)
+            hotkey_changed  = new_cfg.toggle_hotkey != old_hotkey
+            grid_changed    = (new_cfg.grid_cols != old_cols or
+                               new_cfg.grid_rows != old_rows)
+            opacity_changed = (new_cfg.card_opacity != old_card_op or
+                               new_cfg.tile_opacity != old_tile_op)
             self._cfg = new_cfg
             _settings.save(new_cfg)
 
@@ -768,6 +867,9 @@ class MacroDeckApp(QObject):
 
             if grid_changed:
                 self._popup.rebuild_grid(new_cfg.grid_cols, new_cfg.grid_rows)
+
+            if opacity_changed:
+                self._popup.set_opacities(new_cfg.card_opacity, new_cfg.tile_opacity)
 
     def _check_permissions(self):
         dlg = PermissionsDialog()

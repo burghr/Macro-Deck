@@ -2,12 +2,6 @@ import json, os, uuid
 from dataclasses import dataclass, field, asdict
 from typing import Optional
 
-PALETTE = [
-    "#E53935", "#8E24AA", "#1E88E5", "#00897B",
-    "#F4511E", "#D81B60", "#5E35B1", "#039BE5",
-    "#43A047", "#FB8C00", "#00ACC1", "#7CB342",
-]
-
 
 @dataclass
 class KeyEvent:
@@ -20,7 +14,6 @@ class KeyEvent:
 class Macro:
     id: str
     name: str
-    color: str
     kind: str = "keys"  # keys | text | cmd | media
     events: list = field(default_factory=list)
     text: str = ""
@@ -63,12 +56,5 @@ class MacroStore:
         self._d.pop(slot, None)
         self.save()
 
-    def next_color(self) -> str:
-        used = {m.color for m in self._d.values()}
-        for c in PALETTE:
-            if c not in used:
-                return c
-        return PALETTE[len(self._d) % len(PALETTE)]
-
     def new_macro(self, name: str = "New Macro") -> Macro:
-        return Macro(id=str(uuid.uuid4()), name=name, color=self.next_color())
+        return Macro(id=str(uuid.uuid4()), name=name)
