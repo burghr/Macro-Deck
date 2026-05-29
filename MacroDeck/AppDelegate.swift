@@ -130,8 +130,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         if popover.isShown {
             popover.performClose(sender)
         } else {
+            // Show without making the popover's window key. NSPopover.transient
+            // doesn't need key status to receive clicks or auto-dismiss, and
+            // leaving the previously-active app key means macro hotkeys
+            // (⌃1..⌃0) fire keystrokes into that app — not into MacroDeck.
             popover.show(relativeTo: btn.bounds, of: btn, preferredEdge: .minY)
-            popover.contentViewController?.view.window?.makeKey()
         }
     }
 
@@ -143,6 +146,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             onSlot: { [weak self] slot in
                 guard let self, let macro = self.store.get(slot: slot) else { return }
                 Player.shared.run(macro: macro)
+                // If the popover is up when a slot hotkey fires, dismiss it
+                // the same way a click would. Without this, the popover stays
+                // open after the hotkey path (which doesn't go through the
+                // SwiftUI tile-click handler).
+                if !macro.keepOpen, self.popover.isShown {
+                    self.popover.performClose(nil)
+                }
             },
             onToggle: { [weak self] in
                 self?.togglePopover(nil)
