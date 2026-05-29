@@ -48,7 +48,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         if NSApp.currentEvent?.type == .rightMouseUp {
             showContextMenu()
         } else {
-            togglePopover(sender)
+            // Click → user wants to interact; activate the app so text fields
+            // etc. are usable. Hotkey → toggle() with activate: false so the
+            // previously-focused app keeps key status for macro playback.
+            toggle(activate: true)
         }
     }
 
@@ -125,16 +128,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         popover.contentViewController = host
     }
 
+    // Hotkey path: show without activating so the previously-key app keeps
+    // focus and slot hotkeys fire keystrokes into that app.
     @objc func togglePopover(_ sender: Any?) {
+        toggle(activate: false)
+    }
+
+    private func toggle(activate: Bool) {
         guard let btn = statusItem.button else { return }
         if popover.isShown {
-            popover.performClose(sender)
+            popover.performClose(nil)
         } else {
-            // Show without making the popover's window key. NSPopover.transient
-            // doesn't need key status to receive clicks or auto-dismiss, and
-            // leaving the previously-active app key means macro hotkeys
-            // (⌃1..⌃0) fire keystrokes into that app — not into MacroDeck.
             popover.show(relativeTo: btn.bounds, of: btn, preferredEdge: .minY)
+            if activate {
+                NSApp.activate(ignoringOtherApps: true)
+            }
         }
     }
 
