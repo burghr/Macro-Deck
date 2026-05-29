@@ -9,58 +9,30 @@ APP_DEST="$INSTALL_DIR/$APP_NAME.app"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 LOG="$HOME/.mac-macro/macrodeck.log"
 
-PY=/usr/bin/python3
-
-echo "==> Checking Python dependencies..."
-MISSING=()
-for mod in py2app PyQt6 pynput; do
-    if ! arch -arm64 "$PY" -c "import $mod" 2>/dev/null; then
-        MISSING+=("$mod")
-    fi
-done
-
-if [ ${#MISSING[@]} -gt 0 ]; then
-    if ! arch -arm64 "$PY" -m pip --version >/dev/null 2>&1; then
-        echo "Error: pip is not available for $PY."
-        echo "       Install the Xcode Command Line Tools (xcode-select --install)"
-        echo "       or bootstrap pip with: $PY -m ensurepip --user"
-        exit 1
-    fi
-    echo "    Installing: ${MISSING[*]}"
-    # pyobjc 12.x dropped Python 3.9 support; pin transitive deps so py2app
-    # resolves to the last 3.9-compatible release (11.x) on Apple's /usr/bin/python3.
-    PYOBJC_PINS=(
-        'pyobjc-core<12'
-        'pyobjc-framework-Cocoa<12'
-        'pyobjc-framework-Quartz<12'
-        'pyobjc-framework-ApplicationServices<12'
-        'pyobjc-framework-CoreText<12'
-    )
-    PIP_LOG="$(mktemp -t macrodeck-pip.XXXXXX)"
-    if ! arch -arm64 "$PY" -m pip install --user "${MISSING[@]}" "${PYOBJC_PINS[@]}" > "$PIP_LOG" 2>&1; then
-        echo "Error: failed to install Python dependencies. Full log:"
-        cat "$PIP_LOG"
-        echo ""
-        echo "If you see 'externally-managed-environment', you are likely using a"
-        echo "non-Apple Python (e.g. Homebrew). Either use /usr/bin/python3, create"
-        echo "a venv, or re-run pip with --break-system-packages."
-        exit 1
-    fi
-    rm -f "$PIP_LOG"
-fi
-
-echo "==> Building $APP_NAME (this takes ~30s)..."
+echo "==> Building $APP_NAME with xcodebuild (this takes ~30s)..."
 cd "$SCRIPT_DIR"
-rm -rf dist build
+
+DERIVED="$SCRIPT_DIR/.derived"
+rm -rf "$DERIVED"
+
 BUILD_LOG="$(mktemp -t macrodeck-build.XXXXXX)"
-if ! arch -arm64 "$PY" setup.py py2app > "$BUILD_LOG" 2>&1; then
-    echo "Error: py2app build failed. Full log:"
+if ! xcodebuild \
+        -project "$APP_NAME.xcodeproj" \
+        -scheme "$APP_NAME" \
+        -configuration Release \
+        -derivedDataPath "$DERIVED" \
+        CODE_SIGN_IDENTITY="-" \
+        CODE_SIGNING_REQUIRED=NO \
+        CODE_SIGNING_ALLOWED=NO \
+        build > "$BUILD_LOG" 2>&1; then
+    echo "Error: xcodebuild failed. Full log:"
     cat "$BUILD_LOG"
     exit 1
 fi
 
-if [ ! -d "$SCRIPT_DIR/dist/$APP_NAME.app" ]; then
-    echo "Error: build completed but dist/$APP_NAME.app not found. Build log:"
+BUILT_APP="$DERIVED/Build/Products/Release/$APP_NAME.app"
+if [ ! -d "$BUILT_APP" ]; then
+    echo "Error: build succeeded but $BUILT_APP not found. Build log:"
     cat "$BUILD_LOG"
     exit 1
 fi
@@ -71,17 +43,20 @@ launchctl unload "$PLIST" 2>/dev/null || true
 launchctl unload "$HOME/Library/LaunchAgents/com.mac-macro.plist" 2>/dev/null || true
 rm -f "$HOME/Library/LaunchAgents/com.mac-macro.plist"
 pkill -f "$APP_NAME.app/Contents/MacOS" 2>/dev/null || true
-pkill -f "mac-macro/main.py" 2>/dev/null || true
 sleep 1
 
-# Clear TCC entries so the new binary gets a clean grant (stale entries cause silent failures)
+# Clear TCC entries so the new binary gets a clean grant (stale entries cause
+# silent failures after the binary signature changes).
 tccutil reset Accessibility com.macrodeck.app 2>/dev/null || true
-tccutil reset ListenEvent com.macrodeck.app 2>/dev/null || true
+tccutil reset ListenEvent   com.macrodeck.app 2>/dev/null || true
 
 echo "==> Installing to $APP_DEST..."
 mkdir -p "$INSTALL_DIR"
 rm -rf "$APP_DEST"
-cp -r "$SCRIPT_DIR/dist/$APP_NAME.app" "$APP_DEST"
+cp -R "$BUILT_APP" "$APP_DEST"
+
+# Ad-hoc sign so the OS treats it as a stable identity for TCC grants.
+codesign --force --deep --sign - "$APP_DEST" >/dev/null 2>&1 || true
 
 echo "==> Registering LaunchAgent..."
 mkdir -p "$(dirname "$PLIST")"

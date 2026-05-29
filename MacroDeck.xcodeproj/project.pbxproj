@@ -1,0 +1,405 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D1000000000000000000000A /* MacroDeckApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000000A /* MacroDeckApp.swift */; };
+		D1000000000000000000000B /* Macro.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000000B /* Macro.swift */; };
+		D1000000000000000000000C /* MacroStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000000C /* MacroStore.swift */; };
+		D1000000000000000000000D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000000D /* Settings.swift */; };
+		D1000000000000000000000E /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000000E /* PopupView.swift */; };
+		D1000000000000000000000F /* MacroTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000000F /* MacroTile.swift */; };
+		D10000000000000000000010 /* VibrancyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000010 /* VibrancyView.swift */; };
+		D10000000000000000000011 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000011 /* Player.swift */; };
+		D10000000000000000000012 /* MediaKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000012 /* MediaKey.swift */; };
+		D10000000000000000000013 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000013 /* Permissions.swift */; };
+		D10000000000000000000014 /* KeyMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000014 /* KeyMap.swift */; };
+		D10000000000000000000015 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000015 /* AppDelegate.swift */; };
+		D10000000000000000000016 /* HotkeyListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000016 /* HotkeyListener.swift */; };
+		D10000000000000000000017 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000017 /* EditorView.swift */; };
+		D10000000000000000000018 /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000018 /* Recorder.swift */; };
+		D10000000000000000000019 /* SymbolPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000019 /* SymbolPickerView.swift */; };
+		D1000000000000000000001A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000001A /* SettingsView.swift */; };
+		D1000000000000000000001B /* HotkeyField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000001B /* HotkeyField.swift */; };
+		E20000000000000000000002 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000001 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AC000000000000000000000A /* MacroDeck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacroDeck.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1000000000000000000000A /* MacroDeckApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacroDeckApp.swift; sourceTree = "<group>"; };
+		C1000000000000000000000B /* Macro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Macro.swift; sourceTree = "<group>"; };
+		C1000000000000000000000C /* MacroStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacroStore.swift; sourceTree = "<group>"; };
+		C1000000000000000000000D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		C1000000000000000000000E /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupView.swift; sourceTree = "<group>"; };
+		C1000000000000000000000F /* MacroTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacroTile.swift; sourceTree = "<group>"; };
+		C10000000000000000000010 /* VibrancyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibrancyView.swift; sourceTree = "<group>"; };
+		C10000000000000000000011 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		C10000000000000000000012 /* MediaKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKey.swift; sourceTree = "<group>"; };
+		C10000000000000000000013 /* Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
+		C10000000000000000000014 /* KeyMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMap.swift; sourceTree = "<group>"; };
+		C10000000000000000000015 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C10000000000000000000016 /* HotkeyListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyListener.swift; sourceTree = "<group>"; };
+		C10000000000000000000017 /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
+		C10000000000000000000018 /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
+		C10000000000000000000019 /* SymbolPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolPickerView.swift; sourceTree = "<group>"; };
+		C1000000000000000000001A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		C1000000000000000000001B /* HotkeyField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyField.swift; sourceTree = "<group>"; };
+		E00000000000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E10000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA000000000000000000000A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A200000000000000000000A2 = {
+			isa = PBXGroup;
+			children = (
+				A300000000000000000000A3 /* MacroDeck */,
+				A700000000000000000000A7 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A300000000000000000000A3 /* MacroDeck */ = {
+			isa = PBXGroup;
+			children = (
+				C1000000000000000000000A /* MacroDeckApp.swift */,
+				C10000000000000000000015 /* AppDelegate.swift */,
+				A400000000000000000000A4 /* Models */,
+				A500000000000000000000A5 /* Views */,
+				A600000000000000000000A6 /* Engine */,
+				E00000000000000000000001 /* Info.plist */,
+				E10000000000000000000001 /* Assets.xcassets */,
+			);
+			path = MacroDeck;
+			sourceTree = "<group>";
+		};
+		A400000000000000000000A4 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C1000000000000000000000B /* Macro.swift */,
+				C1000000000000000000000C /* MacroStore.swift */,
+				C1000000000000000000000D /* Settings.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A500000000000000000000A5 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C1000000000000000000000E /* PopupView.swift */,
+				C1000000000000000000000F /* MacroTile.swift */,
+				C10000000000000000000010 /* VibrancyView.swift */,
+				C10000000000000000000017 /* EditorView.swift */,
+				C10000000000000000000019 /* SymbolPickerView.swift */,
+				C1000000000000000000001A /* SettingsView.swift */,
+				C1000000000000000000001B /* HotkeyField.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A600000000000000000000A6 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				C10000000000000000000011 /* Player.swift */,
+				C10000000000000000000012 /* MediaKey.swift */,
+				C10000000000000000000013 /* Permissions.swift */,
+				C10000000000000000000014 /* KeyMap.swift */,
+				C10000000000000000000016 /* HotkeyListener.swift */,
+				C10000000000000000000018 /* Recorder.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		A700000000000000000000A7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AC000000000000000000000A /* MacroDeck.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A800000000000000000000A8 /* MacroDeck */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B200000000000000000000B2 /* Build configuration list for PBXNativeTarget "MacroDeck" */;
+			buildPhases = (
+				A900000000000000000000A9 /* Sources */,
+				AA000000000000000000000A /* Frameworks */,
+				AB000000000000000000000B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacroDeck;
+			productName = MacroDeck;
+			productReference = AC000000000000000000000A /* MacroDeck.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A100000000000000000000A1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A800000000000000000000A8 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = B100000000000000000000B1 /* Build configuration list for PBXProject "MacroDeck" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A200000000000000000000A2;
+			productRefGroup = A700000000000000000000A7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A800000000000000000000A8 /* MacroDeck */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AB000000000000000000000B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E20000000000000000000002 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A900000000000000000000A9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D1000000000000000000000A /* MacroDeckApp.swift in Sources */,
+				D1000000000000000000000B /* Macro.swift in Sources */,
+				D1000000000000000000000C /* MacroStore.swift in Sources */,
+				D1000000000000000000000D /* Settings.swift in Sources */,
+				D1000000000000000000000E /* PopupView.swift in Sources */,
+				D1000000000000000000000F /* MacroTile.swift in Sources */,
+				D10000000000000000000010 /* VibrancyView.swift in Sources */,
+				D10000000000000000000011 /* Player.swift in Sources */,
+				D10000000000000000000012 /* MediaKey.swift in Sources */,
+				D10000000000000000000013 /* Permissions.swift in Sources */,
+				D10000000000000000000014 /* KeyMap.swift in Sources */,
+				D10000000000000000000015 /* AppDelegate.swift in Sources */,
+				D10000000000000000000016 /* HotkeyListener.swift in Sources */,
+				D10000000000000000000017 /* EditorView.swift in Sources */,
+				D10000000000000000000018 /* Recorder.swift in Sources */,
+				D10000000000000000000019 /* SymbolPickerView.swift in Sources */,
+				D1000000000000000000001A /* SettingsView.swift in Sources */,
+				D1000000000000000000001B /* HotkeyField.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AD000000000000000000000D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AE000000000000000000000E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		AF000000000000000000000F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MacroDeck/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.macrodeck.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B000000000000000000000B0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MacroDeck/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.macrodeck.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B100000000000000000000B1 /* Build configuration list for PBXProject "MacroDeck" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD000000000000000000000D /* Debug */,
+				AE000000000000000000000E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B200000000000000000000B2 /* Build configuration list for PBXNativeTarget "MacroDeck" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AF000000000000000000000F /* Debug */,
+				B000000000000000000000B0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A100000000000000000000A1 /* Project object */;
+}

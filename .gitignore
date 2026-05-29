@@ -1,4 +1,14 @@
 .DS_Store
+
+# Swift / Xcode build artifacts
+.derived/
+.build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+
+# Old Python build leftovers (kept so a stale checkout doesn't drag them in)
 build/
 dist/
 __pycache__/
