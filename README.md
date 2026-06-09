@@ -14,12 +14,12 @@ A Stream Deck–style macro launcher for macOS. Lives in the menu bar, fires use
 
 - **Native menu bar popover** with real macOS vibrancy
 - **Four macro kinds**:
-  - **Keys** — recorded press/release sequence, replayable with editable per-event delays
-  - **Text** — type a snippet of text (multi-line)
-  - **Command** — run a shell command
-  - **Media** — vol/mute/play/next/prev/brightness, fires the real HUD + tink
+  - **Keys** - recorded press/release sequence, replayable with editable per-event delays
+  - **Text** - type a snippet of text (multi-line)
+  - **Command** - run a shell command
+  - **Media** - vol/mute/play/next/prev/brightness, fires the real HUD + tink
 - **SF Symbol icons** with optional tint colour, picked from a searchable grid
-- **Global hotkeys** — `⌃1`–`⌃0` runs the macro in that slot; `⌃⇧M` toggles the popover
+- **Global hotkeys** - `⌃1`–`⌃0` runs the macro in that slot; `⌃⇧M` toggles the popover
 - **Per-macro "keep popup open"** for rapid-fire actions
 - **Auto-starts at login** via a LaunchAgent
 
@@ -51,7 +51,7 @@ bash uninstall.sh
 
 | Path | Purpose |
 |---|---|
-| `MacroDeck.xcodeproj` | Xcode project — open this to develop |
+| `MacroDeck.xcodeproj` | Xcode project - open this to develop |
 | `MacroDeck/MacroDeckApp.swift` | `@main` SwiftUI App with `MenuBarExtra` |
 | `MacroDeck/Models/` | `Macro`, `MacroStore`, `Settings` (JSON-compatible with v1) |
 | `MacroDeck/Views/` | `PopupView`, `MacroTile`, `VibrancyView` |
